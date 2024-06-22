@@ -1,0 +1,33 @@
+name: 'C++ practice'
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      repository-projects: write
+    strategy:
+      matrix:
+        include:
+          - project_name: 'String'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtest-dev g++ valgrind cmake python3 
+      - name: Build and run tests
+        working-directory: ${{ matrix.project_name }}
+        run: |
+          cmake . -DPATCH_VERSION=${{ github.run_number }}
+          cmake --build .
+          cmake --build . --target test
+
