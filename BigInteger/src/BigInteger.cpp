@@ -1,5 +1,6 @@
 #include "BigInteger.hpp"
 
+#include <algorithm>
 #include <iomanip>
 #include <sstream>
 
@@ -72,6 +73,14 @@ bool BigInt::IsNegative() const {
 
 const int& BigInt::GetDigit(size_t index) const {
   return digits_[index];
+}
+void BigInt::Swap(BigInt& other) {
+  std::swap(is_negative_, other.is_negative_);
+  std::swap(digits_, other.digits_);
+}
+BigInt& BigInt::operator=(BigInt other){
+    Swap(other);
+    return *this;
 }
 
 std::ostream& operator<<(std::ostream& out, const BigInt& number) {

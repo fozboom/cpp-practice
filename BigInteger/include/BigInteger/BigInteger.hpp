@@ -34,13 +34,15 @@ class BigInt {
   static std::string GetIntAsStringWithLeadingZeros(int x);
   static int ConvertStringToDigit(const std::string& str, size_t start_pos,
                                   size_t end_pos);
-
+  void Swap(BigInt& other);
  public:
   static const int kNumberSystemBase = 10;
   static const int kMaxDigitsInElement = 1;
 
   BigInt(int64_t number = 0);
   BigInt(const std::string& str);
+  BigInt(const BigInt& copy) = default;
+  BigInt& operator=(BigInt other);
 
   std::string ToString() const;
   size_t CountDigits() const;
