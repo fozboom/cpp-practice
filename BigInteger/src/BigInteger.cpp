@@ -141,3 +141,7 @@ bool operator<=(const BigInt& a, const BigInt& b) {
 bool operator>=(const BigInt& a, const BigInt& b) {
   return !(a < b);
 }
+
+BigInt operator""_bi(const char* number, size_t /*unused*/) {
+  return BigInt(std::string(number));
+}

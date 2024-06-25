@@ -58,6 +58,7 @@ bool operator<(const BigInt& a, const BigInt& b);
 bool operator>(const BigInt& a, const BigInt& b);
 bool operator<=(const BigInt& a, const BigInt& b);
 bool operator>=(const BigInt& a, const BigInt& b);
+BigInt operator""_bi(const char* number, size_t);
 std::ostream& operator<<(std::ostream& out, const BigInt& number);
 
 #endif
