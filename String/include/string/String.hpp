@@ -7,14 +7,12 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 /*
-██╗████████╗    ██╗███████╗    ████████╗██╗  ██╗███████╗    ██████╗  █████╗
-███████╗██╗███████╗ ██║╚══██╔══╝    ██║██╔════╝    ╚══██╔══╝██║  ██║██╔════╝
-██╔══██╗██╔══██╗██╔════╝██║██╔════╝ ██║   ██║       ██║███████╗       ██║
-███████║█████╗      ██████╔╝███████║███████╗██║███████╗ ██║   ██║ ██║╚════██║
-██║   ██╔══██║██╔══╝      ██╔══██╗██╔══██║╚════██║██║╚════██║ ██║   ██║
-██║███████║       ██║   ██║  ██║███████╗    ██████╔╝██║  ██║███████║██║███████║
-╚═╝   ╚═╝       ╚═╝╚══════╝       ╚═╝   ╚═╝  ╚═╝╚══════╝    ╚═════╝ ╚═╝
-╚═╝╚══════╝╚═╝╚══════╝
+██████╗  █████╗ ███████╗███████╗
+██╔══██╗██╔══██╗██╔════╝██╔════╝
+██████╔╝███████║███████╗█████╗
+██╔══██╗██╔══██║╚════██║██╔══╝
+██████╔╝██║  ██║███████║███████╗
+╚═════╝ ╚═╝  ╚═╝╚══════╝╚══════╝
 */
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -36,22 +34,22 @@ class String {
   String& operator=(String other) &;
   ~String();
 
-  [[nodiscard]] size_t Size() const;
-  [[nodiscard]] size_t Capacity() const;
+  size_t Size() const;
+  size_t Capacity() const;
 
   char* Data();
-  [[nodiscard]] const char* Data() const;
+  const char* Data() const;
   char& Front();
-  [[nodiscard]] const char& Front() const;
+  const char& Front() const;
   char& Back();
-  [[nodiscard]] const char& Back() const;
+  const char& Back() const;
 
   const char& operator[](size_t index) const;
   char& operator[](size_t index);
 
   void Swap(String& other) noexcept;
 
-  [[nodiscard]] bool Empty() const;
+  bool Empty() const;
 
   void PushBack(char character);
   void PopBack();
@@ -68,13 +66,10 @@ class String {
   String& operator+=(const String& other);
   String& operator*=(size_t n);
 
-  [[nodiscard]] size_t Find(const String& substring,
-                            size_t start_position) const;
-  [[nodiscard]] String Substring(size_t start_position,
-                                 size_t count_characters) const;
-  [[nodiscard]] std::vector<String> Split(
-      const String& delimiter = " "_s) const;
-  [[nodiscard]] String Join(const std::vector<String>& strings) const;
+  size_t Find(const String& substring, size_t start_position) const;
+  String Substring(size_t start_position, size_t count_characters) const;
+  std::vector<String> Split(const String& delimiter = " "_s) const;
+  String Join(const std::vector<String>& strings) const;
 
  private:
   size_t size_;

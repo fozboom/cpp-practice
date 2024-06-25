@@ -1,21 +1,31 @@
 #include "String.hpp"
 
 String::String(size_t size)
-    : size_(size), capacity_(size_), data_(new char[capacity_]) {}
+    : size_(size), capacity_(size_), data_(new char[capacity_]) {
+}
 
-String::String() : size_(0), capacity_(size_), data_(nullptr) {}
+String::String() : size_(0), capacity_(size_), data_(nullptr) {
+}
 
 String::String(size_t size, char character) : String(size) {
   std::fill(data_, data_ + size_, character);
 }
 
-size_t String::Size() const { return size_; }
+size_t String::Size() const {
+  return size_;
+}
 
-const char& String::operator[](size_t index) const { return data_[index]; }
+const char& String::operator[](size_t index) const {
+  return data_[index];
+}
 
-String::~String() { delete[] data_; }
+String::~String() {
+  delete[] data_;
+}
 
-char& String::operator[](size_t index) { return data_[index]; }
+char& String::operator[](size_t index) {
+  return data_[index];
+}
 
 String::String(const char* str) : String(strlen(str)) {
   std::copy(str, str + size_, data_);
@@ -36,7 +46,9 @@ String& String::operator=(String other) & {
   return *this;
 }
 
-void String::Clear() { size_ = 0; }
+void String::Clear() {
+  size_ = 0;
+}
 
 void String::PushBack(char character) {
   if (size_ == capacity_) {
@@ -58,21 +70,33 @@ void String::Reserve(size_t new_capacity) {
   data_ = new_data;
   capacity_ = new_capacity;
 }
-bool String::Empty() const { return size_ == 0; }
-const char* String::Data() const { return data_; }
-char* String::Data() { return data_; }
+
+bool String::Empty() const {
+  return size_ == 0;
+}
+
+const char* String::Data() const {
+  return data_;
+}
+
+char* String::Data() {
+  return data_;
+}
+
 void String::PopBack() {
   if (size_ == 0) {
     return;
   }
   --size_;
 }
+
 void String::Resize(size_t new_size) {
   if (new_size >= capacity_) {
     Reserve(new_size);
   }
   size_ = new_size;
 }
+
 void String::Resize(size_t new_size, char character) {
   size_t previous_size = Size();
   Resize(new_size);
@@ -80,6 +104,7 @@ void String::Resize(size_t new_size, char character) {
     std::fill(data_ + previous_size, data_ + new_size, character);
   }
 }
+
 void String::ShrinkToFit() {
   if (capacity_ > size_) {
     char* new_data = new char[size_];
@@ -90,11 +115,27 @@ void String::ShrinkToFit() {
     capacity_ = size_;
   }
 }
-size_t String::Capacity() const { return capacity_; }
-const char& String::Front() const { return *data_; }
-char& String::Front() { return *data_; }
-const char& String::Back() const { return data_[size_ - 1]; }
-char& String::Back() { return data_[size_ - 1]; }
+
+size_t String::Capacity() const {
+  return capacity_;
+}
+
+const char& String::Front() const {
+  return *data_;
+}
+
+char& String::Front() {
+  return *data_;
+}
+
+const char& String::Back() const {
+  return data_[size_ - 1];
+}
+
+char& String::Back() {
+  return data_[size_ - 1];
+}
+
 String& String::operator+=(const String& other) {
   if (size_ + other.size_ > capacity_) {
     Reserve(2 * (size_ + other.size_));
@@ -103,6 +144,7 @@ String& String::operator+=(const String& other) {
   size_ += other.size_;
   return *this;
 }
+
 String& String::operator*=(size_t n) {
   if (size_ * n > capacity_) {
     Reserve(2 * n * size_);
@@ -206,13 +248,18 @@ bool operator<(const String& str1, const String& str2) {
   return false;
 }
 
-bool operator>(const String& str1, const String& str2) { return str2 < str1; }
+bool operator>(const String& str1, const String& str2) {
+  return str2 < str1;
+}
+
 bool operator<=(const String& str1, const String& str2) {
   return !(str1 > str2);
 }
+
 bool operator>=(const String& str1, const String& str2) {
   return !(str1 < str2);
 }
+
 bool operator==(const String& str1, const String& str2) {
   size_t str1_size = str1.Size();
   size_t str2_size = str2.Size();
@@ -228,9 +275,11 @@ bool operator==(const String& str1, const String& str2) {
   }
   return true;
 }
+
 bool operator!=(const String& str1, const String& str2) {
   return !(str1 == str2);
 }
+
 std::istream& operator>>(std::istream& in, String& string) {
   string.Clear();
   char symbol;
@@ -251,14 +300,19 @@ std::ostream& operator<<(std::ostream& out, const String& string) {
   }
   return out;
 }
+
 String operator+(const String& str1, const String& str2) {
   String result = str1;
   result += str2;
   return result;
 }
+
 String operator*(const String& str1, size_t n) {
   String result = str1;
   result *= n;
   return result;
 }
-String operator""_s(const char* str, size_t /*unused*/) { return String(str); }
+
+String operator""_s(const char* str, size_t /*unused*/) {
+  return String(str);
+}
