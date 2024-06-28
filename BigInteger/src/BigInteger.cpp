@@ -1,17 +1,21 @@
 #include "BigInteger.hpp"
 
 #include <algorithm>
+#include <cstdint>
 #include <iomanip>
 #include <sstream>
 
 BigInt::BigInt(int64_t number) : is_negative_(number < 0) {
   if (number == 0) {
     digits_.push_back(0);
+    return;
   }
-  number = std::abs(number);
-  while (number > 0) {
-    digits_.push_back(number % kNumberSystemBase);
-    number /= kNumberSystemBase;
+  // if not unsigned,here will be an overflow when
+  // std::numeric_limits<int64_t>::min()
+  uint64_t result = std::abs(number);
+  while (result > 0) {
+    digits_.push_back(result % BigInt::kNumberSystemBase);
+    result /= kNumberSystemBase;
   }
 }
 
@@ -74,13 +78,192 @@ bool BigInt::IsNegative() const {
 const int& BigInt::GetDigit(size_t index) const {
   return digits_[index];
 }
+
 void BigInt::Swap(BigInt& other) {
   std::swap(is_negative_, other.is_negative_);
   std::swap(digits_, other.digits_);
 }
-BigInt& BigInt::operator=(BigInt other){
-    Swap(other);
-    return *this;
+
+BigInt& BigInt::operator=(BigInt other) & {
+  Swap(other);
+  return *this;
+}
+
+BigInt& BigInt::operator+=(const BigInt& b) {
+  digits_.reserve(std::max(digits_.size(), b.digits_.size()) + 1);
+  if (is_negative_ == b.is_negative_) {
+    AddWithSameSign(b);
+  } else {
+    AddWithDifferentSign(b);
+    AdjustSignIfZero();
+  }
+  RemoveLeadingZeros();
+  return *this;
+}
+
+void BigInt::AddWithDifferentSign(const BigInt& b) {
+  int carry = 0;
+  BigInt copy = b;
+  if (IsLessAbsolute(*this, b)) {
+    Swap(copy);
+  }
+  size_t a_count_digits = digits_.size();
+  size_t b_count_digits = copy.digits_.size();
+  for (size_t i = 0; i < std::max(a_count_digits, b_count_digits); ++i) {
+    long long current_digit =
+        digits_[i] - (i < b_count_digits ? copy.digits_[i] : 0) - carry;
+    digits_[i] = current_digit;
+    if (current_digit < 0) {
+      digits_[i] += BigInt::kNumberSystemBase;
+    }
+    carry = current_digit < 0 ? 1 : 0;
+  }
+}
+
+void BigInt::AddWithSameSign(const BigInt& b) {
+  int carry = 0;
+  for (size_t i = 0; i < std::max(digits_.size(), b.digits_.size()); ++i) {
+    int result = (i < digits_.size() ? digits_[i] : 0) +
+                 (i < b.digits_.size() ? b.digits_[i] : 0) + carry;
+    digits_[i] = result % kNumberSystemBase;
+    carry = result / kNumberSystemBase;
+  }
+  if (carry != 0) {
+    digits_.push_back(carry);
+  }
+}
+
+bool BigInt::IsLessAbsolute(const BigInt& a, const BigInt& b) {
+  size_t a_count_digits = a.CountDigits();
+  size_t b_count_digits = b.CountDigits();
+
+  if (a_count_digits < b_count_digits) {
+    return true;
+  }
+  if (a_count_digits > b_count_digits) {
+    return false;
+  }
+
+  size_t common_count_digits = a_count_digits;
+  for (ssize_t i = common_count_digits - 1; i >= 0; --i) {
+    if (a.digits_[i] < b.digits_[i]) {
+      return true;
+    }
+    if (a.digits_[i] > b.digits_[i]) {
+      return false;
+    }
+  }
+  return false;
+}
+
+void BigInt::RemoveLeadingZeros() {
+  while (digits_.size() > 1 && digits_.back() == 0) {
+    digits_.pop_back();
+  }
+}
+BigInt& BigInt::operator-=(const BigInt& b) {
+  if (!this->IsNegative() && !b.IsNegative() && *this > b) {
+    BigInt b_copy = b;
+    b_copy.is_negative_ = true;
+    *this += b_copy;
+  } else {
+    is_negative_ = !is_negative_;
+    *this += b;
+    is_negative_ = !is_negative_;
+    AdjustSignIfZero();
+  }
+  return *this;
+}
+
+BigInt BigInt::KaratsubaMultiply(const BigInt& a, const BigInt& b) {
+  return BigInt();
+}
+
+BigInt BigInt::SimpleMultiply(const BigInt& a, const BigInt& b) {
+  size_t a_count_digits = a.CountDigits();
+  size_t b_count_digits = b.CountDigits();
+  BigInt result(a_count_digits + b_count_digits + 1, 0);
+  result.is_negative_ = (a.IsNegative() != b.IsNegative());
+  int carry;
+  for (size_t i = 0; i < a_count_digits; ++i) {
+    carry = 0;
+    for (size_t j = 0; j < b_count_digits || (carry != 0); ++j) {
+      long long current_digit =
+          result.digits_[i + j] + carry +
+          (j < b_count_digits ? a.digits_[i] * b.digits_[j] : 0);
+      result.digits_[i + j] = current_digit % BigInt::kNumberSystemBase;
+      carry = current_digit / BigInt::kNumberSystemBase;
+    }
+  }
+  result.RemoveLeadingZeros();
+  result.AdjustSignIfZero();
+  return result;
+}
+void BigInt::AdjustSignIfZero() {
+  if (digits_[0] == 0) {
+    is_negative_ = false;
+  }
+}
+
+BigInt::BigInt(size_t size, int num) : digits_(size, num), is_negative_(false) {
+}
+BigInt& BigInt::operator*=(const BigInt& b) {
+  *this = SimpleMultiply(*this, b);
+  return *this;
+}
+BigInt& BigInt::operator/=(const BigInt& divisor) {
+  BigInt quotient(0);
+
+  BigInt one(1);
+  BigInt b_abs = divisor.Abs();
+  BigInt remainder = this->Abs();
+
+  while (remainder >= b_abs) {
+    quotient += one;
+    remainder -= b_abs;
+  }
+  quotient.is_negative_ = this->IsNegative() != divisor.IsNegative();
+
+  AdjustSignIfZero();
+  *this = quotient;
+  return *this;
+}
+
+bool BigInt::IsGreaterOrEqualAbsolute(const BigInt& a, const BigInt& b) {
+  return !(IsLessAbsolute(a, b));
+}
+BigInt BigInt::Abs() const {
+  BigInt result = *this;
+  result.is_negative_ = false;
+  return result;
+}
+
+BigInt& BigInt::operator%=(const BigInt& divisor){
+    return *this -= *this/divisor*divisor;
+}
+BigInt BigInt::operator-() const {
+  BigInt result = *this;
+  result.is_negative_ = !this->IsNegative();
+  result.AdjustSignIfZero();
+  return result;
+}
+
+BigInt& BigInt::operator++(){
+  return (*this += 1);
+}
+BigInt BigInt::operator++(int) {
+  BigInt copy = *this;
+  ++(*this);
+  return copy;
+}
+
+BigInt& BigInt::operator--(){
+    return (*this -= 1);
+}
+BigInt BigInt::operator--(int) {
+  BigInt copy = *this;
+  --(*this);
+  return copy;
 }
 
 std::ostream& operator<<(std::ostream& out, const BigInt& number) {
@@ -127,7 +310,7 @@ bool operator<(const BigInt& a, const BigInt& b) {
   }
 
   size_t common_size = a_count_digits;
-  for (size_t i = 0; i < common_size; ++i) {
+  for (ssize_t i = common_size - 1; i >= 0; --i) {
     if (a.GetDigit(i) < b.GetDigit(i)) {
       return (!common_sign_is_negative);
     }
@@ -153,4 +336,39 @@ bool operator>=(const BigInt& a, const BigInt& b) {
 
 BigInt operator""_bi(const char* number, size_t /*unused*/) {
   return BigInt(std::string(number));
+}
+
+BigInt operator+(const BigInt& a, const BigInt& b) {
+  BigInt result = a;
+  result += b;
+  return result;
+}
+
+BigInt operator-(const BigInt& a, const BigInt& b) {
+  BigInt copy = a;
+  copy -= b;
+  return copy;
+}
+
+BigInt operator*(const BigInt& a, const BigInt& b) {
+  BigInt result = a;
+  result *= b;
+  return result;
+}
+
+BigInt operator/(const BigInt& a, const BigInt& b) {
+  BigInt result = a;
+  result /= b;
+  return result;
+}
+BigInt operator%(const BigInt& a, const BigInt& b) {
+  BigInt result = a;
+  result %= b;
+  return result;
+}
+std::istream& operator>>(std::istream& in, BigInt& number) {
+  std::string s;
+  in >> s;
+  number = BigInt(s);
+  return in;
 }

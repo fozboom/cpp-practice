@@ -2,7 +2,6 @@
 #include <iostream>
 
 int main() {
-  BigInt x("14325");
-  std::cout << x;
+  std::cout << -5%-2;
   return 0;
 }
