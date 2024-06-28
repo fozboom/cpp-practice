@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.28)
+cmake_minimum_required(VERSION 3.18)
 
 set(TASK_NAME big-integer-tests)
 set(RUN_NAME big-integer-run)

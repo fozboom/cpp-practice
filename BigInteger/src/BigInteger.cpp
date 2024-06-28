@@ -104,7 +104,7 @@ BigInt& BigInt::operator+=(const BigInt& b) {
 void BigInt::AddWithDifferentSign(const BigInt& b) {
   int carry = 0;
   BigInt copy = b;
-  if (IsLessAbsolute(*this, b)) {
+  if (IsLessAbsolute(b)) {
     Swap(copy);
   }
   size_t a_count_digits = digits_.size();
@@ -133,8 +133,8 @@ void BigInt::AddWithSameSign(const BigInt& b) {
   }
 }
 
-bool BigInt::IsLessAbsolute(const BigInt& a, const BigInt& b) {
-  size_t a_count_digits = a.CountDigits();
+bool BigInt::IsLessAbsolute(const BigInt& b) const {
+  size_t a_count_digits = this->CountDigits();
   size_t b_count_digits = b.CountDigits();
 
   if (a_count_digits < b_count_digits) {
@@ -146,10 +146,10 @@ bool BigInt::IsLessAbsolute(const BigInt& a, const BigInt& b) {
 
   size_t common_count_digits = a_count_digits;
   for (ssize_t i = common_count_digits - 1; i >= 0; --i) {
-    if (a.digits_[i] < b.digits_[i]) {
+    if (this->digits_[i] < b.digits_[i]) {
       return true;
     }
-    if (a.digits_[i] > b.digits_[i]) {
+    if (this->digits_[i] > b.digits_[i]) {
       return false;
     }
   }
@@ -161,6 +161,7 @@ void BigInt::RemoveLeadingZeros() {
     digits_.pop_back();
   }
 }
+
 BigInt& BigInt::operator-=(const BigInt& b) {
   if (!this->IsNegative() && !b.IsNegative() && *this > b) {
     BigInt b_copy = b;
@@ -199,6 +200,7 @@ BigInt BigInt::SimpleMultiply(const BigInt& a, const BigInt& b) {
   result.AdjustSignIfZero();
   return result;
 }
+
 void BigInt::AdjustSignIfZero() {
   if (digits_[0] == 0) {
     is_negative_ = false;
@@ -207,10 +209,14 @@ void BigInt::AdjustSignIfZero() {
 
 BigInt::BigInt(size_t size, int num) : digits_(size, num), is_negative_(false) {
 }
+
+// TODO: Implement multiplication using the Karatsuba algorithm
 BigInt& BigInt::operator*=(const BigInt& b) {
   *this = SimpleMultiply(*this, b);
   return *this;
 }
+
+// TODO: Implement division of large numbers by small numbers
 BigInt& BigInt::operator/=(const BigInt& divisor) {
   BigInt quotient(0);
 
@@ -229,18 +235,16 @@ BigInt& BigInt::operator/=(const BigInt& divisor) {
   return *this;
 }
 
-bool BigInt::IsGreaterOrEqualAbsolute(const BigInt& a, const BigInt& b) {
-  return !(IsLessAbsolute(a, b));
-}
 BigInt BigInt::Abs() const {
   BigInt result = *this;
   result.is_negative_ = false;
   return result;
 }
 
-BigInt& BigInt::operator%=(const BigInt& divisor){
-    return *this -= *this/divisor*divisor;
+BigInt& BigInt::operator%=(const BigInt& divisor) {
+  return *this -= *this / divisor * divisor;
 }
+
 BigInt BigInt::operator-() const {
   BigInt result = *this;
   result.is_negative_ = !this->IsNegative();
@@ -248,18 +252,20 @@ BigInt BigInt::operator-() const {
   return result;
 }
 
-BigInt& BigInt::operator++(){
+BigInt& BigInt::operator++() {
   return (*this += 1);
 }
+
 BigInt BigInt::operator++(int) {
   BigInt copy = *this;
   ++(*this);
   return copy;
 }
 
-BigInt& BigInt::operator--(){
-    return (*this -= 1);
+BigInt& BigInt::operator--() {
+  return (*this -= 1);
 }
+
 BigInt BigInt::operator--(int) {
   BigInt copy = *this;
   --(*this);
@@ -361,11 +367,13 @@ BigInt operator/(const BigInt& a, const BigInt& b) {
   result /= b;
   return result;
 }
+
 BigInt operator%(const BigInt& a, const BigInt& b) {
   BigInt result = a;
   result %= b;
   return result;
 }
+
 std::istream& operator>>(std::istream& in, BigInt& number) {
   std::string s;
   in >> s;

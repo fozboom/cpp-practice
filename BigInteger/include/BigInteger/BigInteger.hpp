@@ -1,7 +1,9 @@
 #ifndef BIGINTEGER_HPP_
 #define BIGINTEGER_HPP_
+
 #include <string>
 #include <vector>
+
 /*
 ████████╗██╗  ██╗███████╗
 ╚══██╔══╝██║  ██║██╔════╝
@@ -41,6 +43,7 @@ class BigInt {
   void AdjustSignIfZero();
   static BigInt KaratsubaMultiply(const BigInt& a, const BigInt& b);
   static BigInt SimpleMultiply(const BigInt& a, const BigInt& b);
+
  public:
   static const int kNumberSystemBase = 10;
   static const int kMaxDigitsInElement = 1;
@@ -56,8 +59,7 @@ class BigInt {
   bool IsNegative() const;
   const int& GetDigit(size_t index) const;
   void Swap(BigInt& other);
-  static bool IsLessAbsolute(const BigInt& a, const BigInt& b);
-  static bool IsGreaterOrEqualAbsolute(const BigInt& a, const BigInt& b);
+  bool IsLessAbsolute(const BigInt& b) const;
   BigInt Abs() const;
   BigInt& operator+=(const BigInt& b);
   BigInt& operator-=(const BigInt& b);
@@ -69,6 +71,7 @@ class BigInt {
   BigInt operator++(int);
   BigInt& operator--();
   BigInt operator--(int);
+
  private:
   std::vector<int> digits_;
   bool is_negative_;
