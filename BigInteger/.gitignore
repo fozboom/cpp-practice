@@ -1,0 +1,35 @@
+cmake-build-debug/
+!cmake-build-debug/string-tests
+cmake-build-release/
+build/
+Release/
+Debug/
+tests/log.txt
+*.o
+*.a
+*.so
+*.dylib
+*.lib
+
+# Директории и файлы CMake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+*.cmake
+Makefile
+
+# Файлы CLion
+.idea/
+*.iml
+
+# Файлы VSCode
+.vscode/
+
+# Исполняемые файлы
+*.exe
+*.out
+*.app
+
+# Code-style
+.clang-format
+.clang-tidy
