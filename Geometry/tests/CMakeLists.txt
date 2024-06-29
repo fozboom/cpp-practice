@@ -1,0 +1,24 @@
+cmake_minimum_required(VERSION 3.16)
+SET(CMAKE_INSTALL_RPATH "${PROJECT_SOURCE_DIR}/bin")
+SET(TASK_NAME geometry)
+
+string(TOLOWER "${CMAKE_BUILD_TYPE}" build_type)
+if (build_type STREQUAL san)
+        add_compile_options(-fsanitize=address -fsanitize=undefined)
+        add_link_options(-fsanitize=address -fsanitize=undefined)
+endif()
+
+add_compile_options(-pedantic -Werror -Wextra -std=c++20)
+
+add_link_options(-pedantic -Werror -Wextra -std=c++20)
+
+find_package(GTest REQUIRED)
+include_directories(${GTEST_INCLUDE_DIRS})
+
+enable_testing()
+add_executable(${TASK_NAME} ../src/geometry.cpp tests.cpp)
+
+add_test(${TASK_NAME} ${Testing_SOURCE_DIR}/bin/testing)
+
+target_link_libraries(${TASK_NAME} Threads::Threads ${GTEST_LIBRARIES} ${GMOCK_BOTH_LIBRARIES})
+
