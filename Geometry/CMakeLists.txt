@@ -9,11 +9,20 @@ set(CMAKE_CXX_STANDARD 20)
 add_executable(${RUN_NAME}
         main.cpp
         src/Vector.cpp
-        include/Vector/Vector.hpp)
+        include/Vector/Vector.hpp
+        include/IShape/IShape.hpp
+        include/Point/Point.hpp
+        src/Point.cpp
+        include/Segment/Segment.hpp
+        src/Segment.cpp)
 add_executable(${TEST_NAME}
         tests/tests.cpp
         src/Vector.cpp
-        include/Vector/Vector.hpp)
+        include/Vector/Vector.hpp
+        include/IShape/IShape.hpp
+        include/Point/Point.hpp
+        include/Segment/Segment.hpp
+)
 
 
 
@@ -29,6 +38,9 @@ add_link_options(-pedantic -Werror -Wextra -std=c++20)
 find_package(GTest REQUIRED)
 include_directories(${GTEST_INCLUDE_DIRS})
 include_directories(${PROJECT_SOURCE_DIR}/include/Vector)
+include_directories(${PROJECT_SOURCE_DIR}/include/IShape)
+include_directories(${PROJECT_SOURCE_DIR}/include/Point)
+include_directories(${PROJECT_SOURCE_DIR}/include/Segment)
 enable_testing()
 
 add_test(${TEST_NAME} ${CMAKE_CURRENT_BINARY_DIR}/${TEST_NAME})

@@ -15,6 +15,8 @@ class Vector {
 
   Vector& operator+=(const Vector& other);
   Vector& operator-=(const Vector& other);
+  Vector& operator*=(std::int64_t number);
+  Vector operator-() const;
 
  private:
   std::int64_t x_;
@@ -23,5 +25,9 @@ class Vector {
 
 Vector operator+(const Vector& a, const Vector& b);
 Vector operator-(const Vector& a, const Vector& b);
+Vector operator*(const Vector& a, std::int64_t number);
+Vector operator*(std::int16_t number, const Vector& b);
+std::int64_t operator*(const Vector& a, const Vector& b);
+std::int64_t operator^(const Vector& a, const Vector& b);
 
 #endif  // GEOMETRY_INCLUDE_VECTOR_HPP_

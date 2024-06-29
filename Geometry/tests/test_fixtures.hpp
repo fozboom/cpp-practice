@@ -1,5 +1,6 @@
-
-#include "../include/geometry/geometry.hpp"
+#include "Vector.hpp"
+#include "Point.hpp"
+#include "IShape.hpp"
 #include <gtest/gtest.h>
 #pragma once
 
